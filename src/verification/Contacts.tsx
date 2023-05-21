@@ -1,17 +1,25 @@
-import { useContext, ChangeEvent } from 'react';
+import { useContext, useMemo, ChangeEvent } from 'react';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 
 import { VerificationFormContext } from '../context/VerificationFormContext';
 
 const Contacts = () => {
-  const { form, setForm } = useContext(VerificationFormContext);
+  const { form, dispatch } = useContext(VerificationFormContext);
+
+  const emailError = useMemo(() => form.errors.find(e => e.field === 'email'), [form.errors]);
+  const phoneError = useMemo(() => form.errors.find(e => e.field === 'phone'), [form.errors]);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => { 
-    setForm && setForm({ 
-      ...form, 
-      [e.target.id]: e.target.value || ''
-    });
+    dispatch({ type: 'UPDATE_FORM', field: e.target.id, value: e.target.value || '' });
+  };
+
+  const onEmailBlur = () => {
+    dispatch({ type: 'VALIDATE_EMAIL', value: form.email });
+  };
+
+  const onPhoneBlur = () => {
+    dispatch({ type: 'VALIDATE_PHONE', value: form.phone });
   };
 
   return (
@@ -23,8 +31,8 @@ const Contacts = () => {
       noValidate
       autoComplete='off'
     >
-      <TextField id='email' onChange={handleChange} label='Email' variant='standard' /><br />
-      <TextField id='phone' onChange={handleChange} label='Phone' variant='standard' /><br />
+      <TextField id='email' value={form.email} onChange={handleChange} onBlur={onEmailBlur} error={Boolean(emailError)} helperText={emailError?.message} label='Email' variant='standard' /><br />
+      <TextField id='phone' value={form.phone} onChange={handleChange} onBlur={onPhoneBlur} error={Boolean(phoneError)} helperText={phoneError?.message} label='Phone' variant='standard' /><br />
     </Box>
   );
 }

@@ -5,13 +5,11 @@ import TextField from '@mui/material/TextField';
 import { VerificationFormContext } from '../context/VerificationFormContext';
 
 const PersonalInfo = () => {
-  const { form, setForm } = useContext(VerificationFormContext);
+  const { form, dispatch } = useContext(VerificationFormContext);
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) => { 
-   setForm && setForm({ 
-      ...form, 
-      [e.target.id]: e.target.value || ''
-    });
+
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    dispatch({ type: 'UPDATE_FORM', field: e.target.id, value: e.target.value || '' });
   };
 
   return (
@@ -23,9 +21,9 @@ const PersonalInfo = () => {
       noValidate
       autoComplete='off'
     >
-      <TextField id='name' onChange={handleChange} label='Name' variant='standard' /><br />
-      <TextField id='city' onChange={handleChange} label='City' variant='standard' /><br />
-      <TextField id='address' onChange={handleChange} label='Address' variant='standard' /><br />
+      <TextField id='name' value={form.name} onChange={handleChange} label='Name' variant='standard' /><br />
+      <TextField id='city' value={form.city} onChange={handleChange} label='City' variant='standard' /><br />
+      <TextField id='address' value={form.address} onChange={handleChange} label='Address' variant='standard' /><br />
     </Box>
   );
 }

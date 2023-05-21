@@ -4,7 +4,7 @@ import { Theme } from '../types/types';
 
 interface IThemeContextType {
   theme: Theme;
-  toggleTheme?: () => void;
+  toggleTheme: () => void;
 }
 
-export const ThemeContext = createContext<IThemeContextType>({ theme: Theme.Light });
+export const ThemeContext = createContext<IThemeContextType>({} as IThemeContextType);

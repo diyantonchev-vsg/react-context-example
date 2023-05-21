@@ -1,22 +1,66 @@
-import { useState, SyntheticEvent } from 'react';
+import { useState, useReducer, SyntheticEvent, Reducer } from 'react';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
 
 import { VerificationFormContext } from '../context/VerificationFormContext';
-import { IVerificationForm } from '../types/types';
+import { IVerificationForm, VerificationFormUpdateAction } from '../types/types';
 import PersonalInfo from './PersonalInfo';
 import Contacts from './Contacts';
 import Confirm from './Confirm';
 
+const initialState: IVerificationForm = { 
+  name: '',
+  email: '',
+  phone: '',
+  address: '',
+  city: '',
+  errors: []
+};
+
+const formReducer: Reducer<IVerificationForm, VerificationFormUpdateAction> = (state: IVerificationForm, action: VerificationFormUpdateAction) => {
+  switch (action.type) {
+    case 'UPDATE_FORM':
+      return {
+        ...state,
+        [action.field]: action.value
+      };
+      case 'VALIDATE_EMAIL': {
+        const isEmailValid = action.value.toLowerCase()
+          .match(
+            /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+          );
+
+        const errors = isEmailValid ? state.errors.filter((error) => error.field !== 'email') : [...state.errors, { field: 'email', message: 'Email is invalid' }];
+ 
+        return {
+          ...state,
+          errors
+        };
+      }
+    case 'VALIDATE_PHONE': {
+      const isPhoneValid = action.value.toLowerCase()
+      .match(
+        /^\d{10}$/
+      );
+
+      const errors = isPhoneValid ? state.errors.filter((error) => error.field !== 'phone') : [...state.errors, { field: 'phone', message: 'Phone is invalid' }];
+
+      return {
+        ...state,
+        errors
+      };
+    }
+    case 'RESET_FORM':
+      return initialState;
+    default:
+      return state;
+  }
+};
+
 const VerificationForm = () => {
-  const [form, setForm] = useState<IVerificationForm>({
-    name: '',
-    email: '',
-    phone: '',
-    address: '',
-    city: ''
-  });
+  const [form, dispatch] = useReducer<Reducer<IVerificationForm,VerificationFormUpdateAction>>(formReducer, initialState);
+  
   const [tab, setTab] = useState<number>(0);
 
   const onTabChange = (e: SyntheticEvent, newTab: number) => {
@@ -24,7 +68,7 @@ const VerificationForm = () => {
   };
 
   return (
-    <VerificationFormContext.Provider value={{ form, setForm }}>
+    <VerificationFormContext.Provider value={{ form, dispatch }}>
       <Box sx={{ width: '100%' }}>
         <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
           <Tabs value={tab} onChange={onTabChange} textColor='primary' indicatorColor='primary' aria-label='basic tabs example'>

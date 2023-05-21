@@ -1,18 +1,10 @@
 import { createContext } from 'react';
 
-import { IVerificationForm } from '../types/types';
+import { IVerificationForm, VerificationFormUpdateAction } from '../types/types';
 
 export interface IVerificationFormContextType {
   form: IVerificationForm;
-  setForm?: (form: IVerificationForm) => void;
+  dispatch: (action: VerificationFormUpdateAction) => void;
 }
 
-export const VerificationFormContext = createContext<IVerificationFormContextType>({ 
-  form: {
-    name: '',
-    email: '',
-    city: '',
-    address: '',
-    phone: ''
-  }
-});
+export const VerificationFormContext = createContext<IVerificationFormContextType>({} as IVerificationFormContextType);
