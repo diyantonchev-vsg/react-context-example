@@ -8,6 +8,7 @@ const Contacts = () => {
   const { form, dispatch } = useContext(VerificationFormContext);
 
   const emailError = useMemo(() => form.errors.find(e => e.field === 'email'), [form.errors]);
+
   const phoneError = useMemo(() => form.errors.find(e => e.field === 'phone'), [form.errors]);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => { 
